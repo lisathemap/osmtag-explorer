@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSM Tag Explorer</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <h1>🗺️ OSM Tag Explorer</h1>
+    <p>Browse and filter OpenStreetMap tag usage statistics.</p>
+  </header>
+
+  <main>
+    <section class="search-form">
+      <label>Key: <input id="key" type="text" placeholder="e.g. amenity" /></label>
+      <label>Value: <input id="value" type="text" placeholder="optional" /></label>
+      <label>Area: <input id="area" type="text" placeholder="optional" /></label>
+      <label>Top N: <input id="top_n" type="number" value="10" min="1" max="100" /></label>
+      <button id="search-btn">Search</button>
+    </section>
+
+    <section id="results" hidden>
+      <h2>Results</h2>
+      <p id="summary"></p>
+      <table id="results-table">
+        <thead>
+          <tr><th>Tag</th><th>Count</th><th>%</th><th>Bar</th></tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </section>
+
+    <section id="error-box" hidden>
+      <p class="error" id="error-msg"></p>
+    </section>
+  </main>
+
+  <script src="/static/main.js"></script>
+</body>
+</html>
