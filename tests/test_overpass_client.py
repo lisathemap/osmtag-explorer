@@ -42,12 +42,19 @@ class TestOverpassClientBuildQuery(unittest.TestCase):
         ql = client._build_query("highway")
         self.assertIn('[timeout:30]', ql)
 
+    def test_query_key_value_no_area_filter(self):
+        """Ensure area filter is absent when no area is specified."""
+        ql = self.client._build_query("amenity", "cafe")
+        self.assertNotIn('area', ql)
+        self.assertNotIn('searchArea', ql)
+
 
 class TestOverpassClientExecute(unittest.TestCase):
     def setUp(self):
         self.client = OverpassClient()
 
     def _mock_urlopen(self, payload: dict):
+        """Return a mock urlopen context manager that yields the given payload."""
         mock_resp = MagicMock()
         mock_resp.read.return_value = json.dumps(payload).encode()
         mock_resp.__enter__ = lambda s: s
@@ -61,6 +68,13 @@ class TestOverpassClientExecute(unittest.TestCase):
         self.assertIn("elements", result)
         self.assertIn("_elapsed", result)
         self.assertEqual(result["elements"][0]["tags"]["total"], "50")
+
+    @patch("overpass.client.urllib.request.urlopen")
+    def test_elapsed_is_non_negative(self, mock_urlopen):
+        """Verify that the _elapsed timing value is a non-negative number."""
+        mock_urlopen.return_value = self._mock_urlopen(SAMPLE_RESPONSE)
+        result = self.client.query_tag_count("amenity", "cafe")
+        self.assertGreaterEqual(result["_elapsed"], 0)
 
     @patch("overpass.client.urllib.request.urlopen")
     def test_http_error_raises_overpass_error(self, mock_urlopen):
