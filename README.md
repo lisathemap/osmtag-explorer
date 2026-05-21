@@ -40,6 +40,13 @@ results = client.query_tag("amenity", "cafe", bbox=(48.8, 2.3, 48.9, 2.4))
 print(results.summary())
 ```
 
+**Example — export results to a file:**
+
+```python
+results.export("cafes.csv", fmt="csv")
+results.export("cafes.json", fmt="json")
+```
+
 You can also filter and export tag statistics as CSV or JSON from the web interface.
 
 ## Configuration
@@ -48,6 +55,7 @@ You can also filter and export tag statistics as CSV or JSON from the web interf
 |---|---|---|
 | `OVERPASS_API_URL` | `https://overpass-api.de/api` | Overpass API endpoint |
 | `OST_PORT` | `8080` | Local server port |
+| `OST_CACHE_TTL` | `300` | Cache lifetime for query results (seconds) |
 
 ## Requirements
 
