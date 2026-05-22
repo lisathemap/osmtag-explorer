@@ -58,3 +58,19 @@ def merge_reports(
     ]
 
     return TagReport(stats=merged_stats, label=label)
+
+
+def filter_merged_report(report: TagReport, min_count: int = 1) -> TagReport:
+    """Return a new TagReport containing only stats at or above a minimum count.
+
+    Args:
+        report: The TagReport to filter.
+        min_count: Minimum count threshold (inclusive). Defaults to 1.
+
+    Returns:
+        A new TagReport with low-count entries removed, preserving the label.
+    """
+    if min_count < 1:
+        raise ValueError(f"min_count must be at least 1, got {min_count}.")
+    filtered = [stat for stat in report.stats if stat.count >= min_count]
+    return TagReport(stats=filtered, label=report.label)
