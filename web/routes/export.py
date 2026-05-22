@@ -16,6 +16,20 @@ _MIME = {
 }
 
 
+def _build_filename(key: str, value: str | None, fmt: str) -> str:
+    """Build a safe download filename from the tag key, optional value, and format.
+
+    Examples::
+
+        _build_filename("amenity", None, "csv")      -> "amenity.csv"
+        _build_filename("amenity", "cafe", "json")   -> "amenity_cafe.json"
+    """
+    stem = f"{key}_{value}" if value else key
+    # Replace characters that are unsafe in filenames
+    stem = stem.replace("/", "_").replace("\\", "_").replace(" ", "_")
+    return f"{stem}.{fmt}"
+
+
 @export_bp.route("/api/export")
 def export_tag_stats() -> Response:
     """Export cached tag statistics.
@@ -53,10 +67,10 @@ def export_tag_stats() -> Response:
     exporter = TagReportExporter(report)
     if fmt == "csv":
         body = exporter.to_csv(top_n=top_n)
-        filename = f"{key}.csv"
     else:
         body = exporter.to_json(top_n=top_n)
-        filename = f"{key}.json"
+
+    filename = _build_filename(key, value, fmt)
 
     return Response(
         body,
