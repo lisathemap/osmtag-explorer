@@ -48,6 +48,12 @@ class TestTagReport:
         assert len(top1) == 1
         assert top1[0].value == "restaurant"
 
+    def test_top_exceeds_length(self):
+        """Requesting more items than available should return all stats."""
+        report = self._make_report()
+        top10 = report.top(10)
+        assert len(top10) == 2
+
     def test_empty_report_percentages(self):
         report = TagReport(stats=[])
         report.with_percentages()
@@ -83,3 +89,10 @@ class TestTagStatsAnalyzer:
     def test_merge_empty(self):
         merged = self.analyzer.merge_reports([])
         assert merged.total_count == 0
+
+    def test_merge_single_report(self):
+        """Merging a single report should return an equivalent report."""
+        r1 = TagReport(stats=[TagStat(key="amenity", value="cafe", count=30)])
+        merged = self.analyzer.merge_reports([r1])
+        assert merged.total_count == 30
+        assert merged.stats[0].value == "cafe"
