@@ -23,6 +23,15 @@ def _fetch_or_cached(key: str, value: str | None):
     return report
 
 
+def _parse_bool_param(param: str, default: bool = False) -> bool:
+    """Parse a query string parameter as a boolean.
+
+    Treats '1', 'true', and 'yes' (case-insensitive) as True.
+    All other values (including empty string) fall back to *default*.
+    """
+    return param.strip().lower() in ("1", "true", "yes") if param else default
+
+
 @bp.get("/api/annotate")
 def annotate_tag_stats():
     """Return annotated tag stats for a given key (and optional value).
@@ -43,7 +52,7 @@ def annotate_tag_stats():
 
     value = request.args.get("value", "").strip() or None
     default_category = request.args.get("default_category", "other").strip() or "other"
-    include_note = request.args.get("include_note", "0") == "1"
+    include_note = _parse_bool_param(request.args.get("include_note", ""))
 
     try:
         report = _fetch_or_cached(key, value)
